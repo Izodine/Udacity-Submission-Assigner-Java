@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SubmissionAssigner:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/SubmissionAssigner_jar</output-path>
+    <root id="archive" name="SubmissionAssigner.jar">
+      <element id="module-output" name="SubmissionAssigner" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../Poller/lib/gson-2.7.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
