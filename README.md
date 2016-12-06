@@ -5,6 +5,29 @@ A simple Udacity submission assigner that allows selection of projects.
 The program requires that a `--auth-token` parameter be passed. When launching from the command line, simply launch the app using the `java -jar` command, and add `--auth-token` along with your API token. Example: `java -jar SubmissionAssigner.jar --auth-token yourtokengoeshere`.
 
 The app will prompt for each project. Typing "Y" (case insensitive) will input the project into the submission request. Anything else or "N" will discard it. Each time the program checks for a project, it will also grab a `waits` request to show your position in the queue for each project.
+Exmaple:
+```
+Add Your First VR App to submission request? (y/n)
+n
+Add [Egypt] Developing Android Apps: Popular Movies App Stage 2 to submission request? (y/n)
+y
+Add News App to submission request? (y/n)
+y
+Add Book Listing to submission request? (y/n)
+y
+Add Inventory App to submission request? (y/n)
+y
+Add Score Keeper to submission request? (y/n)
+y
+Add Habit Tracker to submission request? (y/n)
+y
+Add Tour guide app to submission request? (y/n)
+```
+
+It will then prompt for a delay. If, for example, you want to start pulling an hour from now:
+```
+Set delay in minutes: 60
+```
 
 Example:
 ```
