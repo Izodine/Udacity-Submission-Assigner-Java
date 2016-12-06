@@ -55,3 +55,7 @@ If you are already assigned the maximum or 2 projects, you will receive this mes
 Waiting until assigned count < 2
 ```
 The program will automatically check this to see when to start pulling again.
+
+#Dependencies
+
+The program uses GSON to generate and parse JSON data. You can find this library here: https://github.com/google/gson
