@@ -44,3 +44,14 @@ Musical Structure                                                          : Pos
 Popular Movies, Stage 2                                                    : Position = 1
 -=-=-=-=-=-=-=-=-=-=-=-=-=-
 ```
+
+If you are assigned a project, you will receive a message:
+```
+You have been assigned a new project! See it here: <<Submission Url here>>
+```
+
+If you are already assigned the maximum or 2 projects, you will receive this message:
+```
+Waiting until assigned count < 2
+```
+The program will automatically check this to see when to start pulling again.
