@@ -29,6 +29,11 @@ It will then prompt for a delay. If, for example, you want to start pulling an h
 Set delay in minutes: 60
 ```
 
+If you want to start pulling instantly:
+```
+Set delay in minutes: 0
+```
+
 Example:
 ```
 Checking...Request #45
