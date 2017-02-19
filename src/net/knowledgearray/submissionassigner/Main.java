@@ -24,7 +24,7 @@ public final class Main {
     private static final String REVIEW_URL = "https://review.udacity.com/#!/submissions/{sid}";
     private static final String ASSIGNED_COUNT_URL = "{}/me/submissions/assigned_count.json".replace("{}",BASE_URL);
 
-    private static final int REFRESH_INTERVAL = (1000 * 60 * 59); // 59 minutes
+    private static final int REFRESH_INTERVAL = (1000 * 60 * 50); // 50 minutes
 
     private static String apiToken;
     private static String projectRequestString;
@@ -76,8 +76,8 @@ public final class Main {
 
             URL requestUrl = new URL(url);
             urlConnection = (HttpURLConnection) requestUrl.openConnection();
-            urlConnection.setReadTimeout(2500);
-            urlConnection.setConnectTimeout(2500);
+            urlConnection.setReadTimeout(5500);
+            urlConnection.setConnectTimeout(5500);
             urlConnection.setRequestMethod(method);
 
             if(params != null) {
@@ -111,7 +111,7 @@ public final class Main {
             return new Response(response, urlConnection.getResponseCode());
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.print("Error: " + e.getMessage());
             return new Response("", -1);
         }
         finally {
@@ -156,22 +156,25 @@ public final class Main {
         }
     }
 
-    private static boolean checkIfFulfilledObject(Response submissionResponse) {
+    private static boolean checkIfFulfilled(Response submissionResponse) {
         JsonObject obj = new JsonParser().parse(submissionResponse.getResponseString()).getAsJsonObject();
 
         boolean isFulfilled = obj.get("status").getAsString().equals("fulfilled");
         if(isFulfilled){
-            System.out.println();
-            System.out.println("You have been assigned a new project! See it here: " + REVIEW_URL.replace("{sid}", String.valueOf(obj.get("submission_id").getAsInt())));
+            displayAssignedMessage(obj);
         }
         return isFulfilled;
+    }
+
+    private static void displayAssignedMessage(JsonObject obj) {
+        System.out.println();
+        System.out.println("You have been assigned a new project! See it here: " + REVIEW_URL.replace("{sid}", String.valueOf(obj.get("submission_id").getAsInt())));
     }
 
     private static void checkIfFulfilledPrior(Response submissionResponse) {
         JsonObject respItem = new JsonParser().parse(submissionResponse.getResponseString()).getAsJsonObject();
         if(respItem.get("status").getAsString().equals("fulfilled")){
-            System.out.println();
-            System.out.println("You have been assigned a new project! See it here: " + REVIEW_URL.replace("{sid}", String.valueOf(respItem.get("submission_id").getAsInt())));
+            displayAssignedMessage(respItem);
         }
     }
 
@@ -326,7 +329,7 @@ public final class Main {
         submissionId = new JsonParser().parse(newSubmissionResp.getResponseString()).getAsJsonObject().get("id").getAsInt();
         checkIfFulfilledPrior(newSubmissionResp);
 
-        final long[] refreshMilis = {System.currentTimeMillis() + REFRESH_INTERVAL}; // 59 minutes from now
+        final long[] refreshMilis = {System.currentTimeMillis() + REFRESH_INTERVAL};
 
         // Kick off pulling
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(2);
@@ -337,7 +340,7 @@ public final class Main {
             waitForAssignedCount();
 
             Response submissionResponse = getSubmissionRequestWithId();
-            if (checkIfFulfilledObject(submissionResponse)) {
+            if (checkIfFulfilled(submissionResponse)) {
                 Response newSubmissionResponse = sendSubmissionRequest();
                 submissionId = new JsonParser().parse(newSubmissionResponse.getResponseString()).getAsJsonObject().get("id").getAsInt();
                 refreshMilis[0] = System.currentTimeMillis() + REFRESH_INTERVAL; // reset timer
@@ -362,15 +365,15 @@ public final class Main {
                 if(refreshResponse.getResponseCode() == 404){
                     System.out.println("Unable to refresh/no active submission request found. Creating new one.");
                     deleteSubmissionRequest(); // Delete if exists
-                    sendSubmissionRequest();
+                    Response newResponse = sendSubmissionRequest();
+                    submissionId = new JsonParser().parse(newResponse.getResponseString()).getAsJsonArray().get(0).getAsJsonObject().get("id").getAsInt();
                 }
                 else {
 
                     JsonArray array = new JsonParser().parse(refreshResponse.getResponseString()).getAsJsonArray();
 
-                    if (array.size() != 0) submissionId = array.get(0).getAsJsonObject().get("id").getAsInt();
+                    submissionId = array.get(0).getAsJsonObject().get("id").getAsInt();
 
-                    //submissionId = new JsonParser().parse(getSubmissionRequest().getResponseString()).getAsJsonObject().get("id").getAsInt();
                     System.out.println("Refresh Successful.");
                 }
                 refreshMilis[0] = System.currentTimeMillis() + REFRESH_INTERVAL;
